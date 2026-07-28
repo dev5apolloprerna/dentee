@@ -1,0 +1,20 @@
+DR Login.
+{
+    "mobile_no":"7984786970",
+    "password":"vrajvraj"
+}
+
+
+Supervisor Login.
+{
+    "mobile_no":"5555555555",
+    "password":"1234"
+}
+
+
+{
+    mobile_no: 9925860684, 
+    password: P@ssw0rd
+}
+
+

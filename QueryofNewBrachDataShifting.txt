@@ -1,0 +1,51 @@
+1) Treatments Master
+
+INSERT INTO treatments (clinic_id, branch_id,name,amount,labwork_required,deleted_at,created_at,updated_at)
+SELECT clinic_id,16,name,amount,labwork_required,deleted_at,created_at,updated_at
+FROM treatments
+WHERE treatments.branch_id=2;
+
+2) Frequencies Master
+
+INSERT INTO frequencies (clinic_id,branch_id,name,deleted_at,created_at,updated_at)
+SELECT clinic_id,17,name,deleted_at,created_at,updated_at
+FROM frequencies
+WHERE frequencies.branch_id=2 and deleted_at is null;
+
+
+3) groups Master
+
+INSERT INTO groups (clinic_id,branch_id,group_name,deleted_at,created_at,updated_at)
+SELECT clinic_id,17,group_name,deleted_at,created_at,updated_at
+FROM groups
+WHERE groups.branch_id=2 and deleted_at is null;
+
+4) Medicines Mastewr
+
+INSERT INTO medicines (clinic_id,branch_id,name,molecule,dosage,frequency,duration,notes,deleted_at,created_at,updated_at)
+SELECT clinic_id,17,name,molecule,dosage,90,duration,notes,deleted_at,created_at,updated_at
+FROM medicines
+WHERE medicines.branch_id=2 and deleted_at is null;
+
+5) Material Master
+INSERT INTO material_master (lab_id,clinic_id,branch_id,treatment_id,product_name,price,istatus,deleted_at,created_at,updated_at)
+SELECT lab_id,clinic_id,15,199,product_name,price,istatus,deleted_at,created_at,updated_at
+FROM material_master
+WHERE branch_id=2 and treatment_id=130 and deleted_at is null;
+
+/***********Find Treatment Id***********/
+SELECT * FROM `treatments` where branch_id in (2,16) and name in ('Ceramic crown','Ceramic cad cam Crown','Zerconia crown','Zerconia crown ( 5YW )','BRUXIR crown','Implant crown','R.P.D ( ACRYLIC)','R.P.D( LUCITONE )','R.P.D( FLEXIBLE )','Root canal treatment','Metal Crown') and deleted_at is null;
+
+
+6) Templates Master
+
+INSERT INTO templates (clinic_id,branch_id,template_name,istatus,deleted_at,created_at,updated_at)
+SELECT  
+clinic_id,17,template_name,istatus,deleted_at,created_at,updated_at
+FROM templates WHERE branch_id=2 and deleted_at is null;
+
+
+INSERT INTO template_medicines (template_id,medicine_id,dosage,frequency,duration,notes,istatus,deleted_at,created_at,updated_at)
+SELECT  
+184,77,dosage,83,duration,notes,istatus,deleted_at,created_at,updated_at
+FROM template_medicines where template_id=178 and medicine_id=62;
