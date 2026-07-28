@@ -13,6 +13,7 @@ use App\Http\Controllers\SignaturePadController;
 |
 */
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\Request;
 
 Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
@@ -33,6 +34,14 @@ Route::get('/clear-all', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('csrf-token', function (Request $request) {
+    $request->session()->regenerateToken();
+
+    return response()->json(['token' => csrf_token()])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+})->name('csrf-token');
+
 Route::get('concentform/{id?}/{iConcernFormId?}/{PatientsConcernFormId?}', 'App\Http\Controllers\Api\PrescriptionController@concentform');
 Route::post('upload', 'App\Http\Controllers\Api\PrescriptionController@upload')->name('patient.upload');
 
