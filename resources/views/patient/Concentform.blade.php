@@ -61,7 +61,7 @@
     <td>
 	<div class="card-body">
                     
-					<form method="POST" action="{{ route('patient.upload') }}">
+					<form id="consent-form" method="POST" action="{{ route('patient.upload') }}">
 					
 					<input type="hidden" id="patient_id" name="patient_id" value="{{$patient['patient'][0]['patient_id']}}">
 					<input type="hidden" id="iConcernFormId" name="iConcernFormId" value="{{ $ConcernForm->iConcernFormId }}">
@@ -73,7 +73,9 @@
                             <div id="sig"></div>
                             <br><br>
                             <button id="clear" class="btn btn-danger">Clear Signature</button>
-                            <button class="btn btn-success">Save</button>
+                            <!--<button class="btn btn-success">Save</button>-->
+                            <button id="save-signature" class="btn btn-success">Save</button>
+                            <div id="submit-error" class="alert alert-danger mt-3" role="alert" style="display: none;"></div>
                             <textarea id="signature" name="signed" style="display: none"></textarea>
                         </div>
                     </form>
@@ -147,8 +149,11 @@
                 touch.target.dispatchEvent(simulatedEvent);
             });
         });*/
-        $(document).ready(function() {
+$(document).ready(function() {
     var sig = $('#sig').signature({syncField: '#signature', syncFormat: 'PNG'});
+    var consentForm = document.getElementById('consent-form');
+    var saveButton = document.getElementById('save-signature');
+    var submitError = document.getElementById('submit-error');
     
     $('#clear').click(function(e) {
         e.preventDefault();
@@ -183,6 +188,38 @@
             false, false, false, 0, null);
         touch.target.dispatchEvent(simulatedEvent);
     }, false);
+    
+    consentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveButton.disabled = true;
+        submitError.style.display = 'none';
+
+        // The form may remain open while the patient reads it or draws a
+        // signature. Refresh the session token immediately before posting so
+        // an expired session does not discard their completed form with a 419.
+        fetch(@json(route('csrf-token')), {
+            method: 'GET',
+            credentials: 'same-origin',
+            cache: 'no-store',
+            headers: {'Accept': 'application/json'}
+        })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Unable to refresh the form session.');
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+                consentForm.querySelector('input[name="_token"]').value = data.token;
+                consentForm.submit();
+            })
+            .catch(function() {
+                saveButton.disabled = false;
+                submitError.textContent = 'Your form could not be submitted. Please check your connection and try again.';
+                submitError.style.display = 'block';
+            });
+    });
 
     touchTarget.addEventListener('touchend', function(e) {
         isDrawing = false;
