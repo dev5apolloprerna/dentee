@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Patient;
 
 class CghsPatientInvoice extends Model
 {
@@ -35,6 +36,15 @@ class CghsPatientInvoice extends Model
         'total_amount' => 'decimal:2',
     ];
 
+    public function patient()
+    {
+        return $this->belongsTo(
+            Patient::class,
+            'patient_id',
+            'patient_id'
+        );
+    }
+    
     public function details()
     {
         return $this->hasMany(

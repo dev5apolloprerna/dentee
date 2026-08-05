@@ -132,6 +132,14 @@ Route::post('cghs-treatment-list', 'App\Http\Controllers\Api\CghsTreatmentContro
 Route::post('cghs-type-master-list', 'App\Http\Controllers\Api\CghsTreatmentController@cghsTypeMasterList');
 Route::post('destroy-cghs-treatment', 'App\Http\Controllers\Api\CghsTreatmentController@destroyCghsTreatment');
 
+Route::post('add-cghs-patient-invoice', 'App\Http\Controllers\Api\CghsPatientInvoiceController@addCghsPatientInvoice');
+Route::post('update-cghs-patient-invoice', 'App\Http\Controllers\Api\CghsPatientInvoiceController@updateCghsPatientInvoice');
+Route::post('cghs-patient-invoice-list', 'App\Http\Controllers\Api\CghsPatientInvoiceController@allCghsPatientInvoice');
+Route::post('destroy-cghs-patient-invoice', 'App\Http\Controllers\Api\CghsPatientInvoiceController@destroyCghsPatientInvoice');
+Route::post('add-cghs-patient-invoice-detail', 'App\Http\Controllers\Api\CghsPatientInvoiceController@addCghsPatientInvoiceDetail');
+Route::post('destroy-cghs-patient-invoice-detail', 'App\Http\Controllers\Api\CghsPatientInvoiceController@destroyCghsPatientInvoiceDetail');
+Route::post('submit-cghs-patient-invoice', 'App\Http\Controllers\Api\CghsPatientInvoiceController@submitCghsPatientInvoice');
+
 Route::post('add-treatment', 'App\Http\Controllers\Api\TreatmentsController@addTreatment');
 Route::get('destroyTreatment/{id}', 'App\Http\Controllers\Api\TreatmentsController@destroyTreatment');
 Route::post('update-treatment/{id}', 'App\Http\Controllers\Api\TreatmentsController@updateTreatment');
