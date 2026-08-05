@@ -228,6 +228,34 @@ class CghsPatientInvoiceController extends Controller
         ]);
     }
 
+    public function cghsPatientInvoiceDetailList(Request $request)
+    {
+        if (!Auth::user()) {
+            return $this->unauthorisedResponse();
+        }
+
+        $request->validate([
+            'iCghsPatientInvoiceId' => 'required',
+        ]);
+
+        $invoice = CghsPatientInvoice::find($request->iCghsPatientInvoiceId);
+
+        if (!$invoice) {
+            return $this->notFoundResponse('CGHS patient invoice not found.');
+        }
+
+        $details = CghsPatientInvoiceDetail::with('treatment')
+            ->where('iCghsPatientInvoiceId', $invoice->iCghsPatientInvoiceId)
+            ->orderBy('id')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'CGHS patient invoice detail list fetched successfully.',
+            'details' => $details,
+        ]);
+    }
+
     public function destroyCghsPatientInvoiceDetail(Request $request)
     {
         if (!Auth::user()) {

@@ -1,0 +1,382 @@
+URL : https://vgdcapp.vrajdentalclinic.com/api/cghs-patient-invoice-list
+
+Request : 
+{
+    "id" : "",
+    "clinic_id" : "1",
+    "branch_id" : "12",
+    "patient_id" : "",
+    "isCghsSubmit" : "",
+    "search" : ""
+}
+
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice created successfully.",
+    "invoice": {
+        "clinic_id": "1",
+        "branch_id": "12",
+        "patient_id": "1325",
+        "patient_name": "Mr. Tarang",
+        "cghs_date": "2026-08-06T00:00:00.000000Z",
+        "amount": "0.00",
+        "discount_amount": "0.00",
+        "total_amount": "0.00",
+        "cghs_type": {
+            "id": 1,
+            "strCghsName": "CGHS",
+            "created_at": "2026-08-05T11:04:27.000000Z",
+            "updated_at": "2026-08-05T11:04:27.000000Z"
+        },
+        "strCghsGUID": "1679f4c3-ca00-42db-b9f9-abacdfeacf83",
+        "isCghsSubmit": 0,
+        "isCghsSubmitBy": 0,
+        "isSharedWithAdmin": 0,
+        "iEnterBy": 4,
+        "updated_at": "2026-08-05T09:37:48.000000Z",
+        "created_at": "2026-08-05T09:37:48.000000Z",
+        "id": 1,
+        "patient": null,
+        "details": []
+    }
+}
+
+-------------------------------------
+
+URL :  https://vgdcapp.vrajdentalclinic.com/api/add-cghs-patient-invoice
+Request :
+{
+    "clinic_id" : "1",
+    "branch_id" : "12",
+    "patient_id" : "1325",
+    "patient_name" : "Mr. Tarang",
+    "cghs_date" : "05-08-2026",
+    "cghs_type" : 1
+}
+
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice created successfully.",
+    "invoice": {
+        "clinic_id": "1",
+        "branch_id": "12",
+        "patient_id": "1325",
+        "patient_name": "Mr. Tarang",
+        "cghs_date": "2026-08-05T00:00:00.000000Z",
+        "amount": "0.00",
+        "discount_amount": "0.00",
+        "total_amount": "0.00",
+        "cghs_type": {
+            "id": 1,
+            "strCghsName": "CGHS",
+            "created_at": "2026-08-05T11:04:27.000000Z",
+            "updated_at": "2026-08-05T11:04:27.000000Z"
+        },
+        "strCghsGUID": "49915371-6a02-4494-b441-82be1c5bd28c",
+        "isCghsSubmit": 0,
+        "isCghsSubmitBy": 0,
+        "isSharedWithAdmin": 0,
+        "iEnterBy": 4,
+        "updated_at": "2026-08-05T08:57:26.000000Z",
+        "created_at": "2026-08-05T08:57:26.000000Z",
+        "id": 1,
+        "patient": null,
+        "details": []
+    }
+}
+---------------------------------
+https://vgdcapp.vrajdentalclinic.com/api/add-cghs-patient-invoice-detail
+
+Request :
+{
+    "iCghsPatientInvoiceId" : 1,
+    "cghs_treatment_id" : "1",
+    "cghs_treatment_name" : "Root Canal Treatment",
+    "iQty" : "1",
+    "iAmount" : "4500.00"
+}
+
+response :
+{
+    "status": "success",
+    "message": "CGHS patient invoice detail created successfully.",
+    "detail": {
+        "iCghsPatientInvoiceId": 1,
+        "cghs_treatment_id": "1",
+        "cghs_treatment_name": "Root Canal Treatment",
+        "iQty": "1",
+        "iAmount": "4500.00",
+        "iEnterBy": 4,
+        "iUpdatedBy": 4,
+        "updated_at": "2026-08-05T09:19:45.000000Z",
+        "created_at": "2026-08-05T09:19:45.000000Z",
+        "id": 1,
+        "treatment": {
+            "cghs_treatment_id": 1,
+            "clinic_id": 1,
+            "branch_id": 12,
+            "cghs_treatment_name": "Root Canal Treatment",
+            "amount": "4500.00",
+            "code": "1001",
+            "deleted_at": null,
+            "created_at": "2026-08-05T06:47:21.000000Z",
+            "updated_at": "2026-08-05T06:47:21.000000Z",
+            "cghs_type": 1
+        }
+    },
+    "invoice": {
+        "id": 1,
+        "clinic_id": 1,
+        "branch_id": 12,
+        "patient_id": 1325,
+        "cghs_date": "2026-08-05T00:00:00.000000Z",
+        "amount": "0.00",
+        "discount_amount": "0.00",
+        "total_amount": "0.00",
+        "cghs_type": {
+            "id": 1,
+            "strCghsName": "CGHS",
+            "created_at": "2026-08-05T11:04:27.000000Z",
+            "updated_at": "2026-08-05T11:04:27.000000Z"
+        },
+        "patient_name": "Mr. Tarang",
+        "iEnterBy": 4,
+        "strCghsGUID": "49915371-6a02-4494-b441-82be1c5bd28c",
+        "isCghsSubmit": 0,
+        "isCghsSubmitBy": 0,
+        "isSharedWithAdmin": 0,
+        "deleted_at": null,
+        "created_at": "2026-08-05T08:57:26.000000Z",
+        "updated_at": "2026-08-05T08:57:26.000000Z",
+        "patient": null,
+        "details": []
+    }
+}
+-------------------------------------------------
+URL : https://vgdcapp.vrajdentalclinic.com/api/destroy-cghs-patient-invoice-detail
+Request : 
+{
+    "id" : 2
+}
+
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice detail deleted successfully.",
+    "invoice": {
+        "id": 1,
+        "clinic_id": 1,
+        "branch_id": 12,
+        "patient_id": 1325,
+        "cghs_date": "2026-08-06T00:00:00.000000Z",
+        "amount": "4500.00",
+        "discount_amount": "0.00",
+        "total_amount": "4500.00",
+        "cghs_type": {
+            "id": 1,
+            "strCghsName": "CGHS",
+            "created_at": "2026-08-05T11:04:27.000000Z",
+            "updated_at": "2026-08-05T11:04:27.000000Z"
+        },
+        "patient_name": "Mr. Tarang",
+        "iEnterBy": 4,
+        "strCghsGUID": "1679f4c3-ca00-42db-b9f9-abacdfeacf83",
+        "isCghsSubmit": 0,
+        "isCghsSubmitBy": 0,
+        "isSharedWithAdmin": 0,
+        "created_at": "2026-08-05T09:37:48.000000Z",
+        "updated_at": "2026-08-05T09:55:23.000000Z",
+        "patient": null,
+        "details": [
+            {
+                "id": 1,
+                "iCghsPatientInvoiceId": 1,
+                "cghs_treatment_id": 1,
+                "cghs_treatment_name": "Root Canal Treatment",
+                "iQty": 1,
+                "iAmount": "4500.00",
+                "iEnterBy": 4,
+                "iUpdatedBy": 4,
+                "created_at": "2026-08-05T09:19:45.000000Z",
+                "updated_at": "2026-08-05T09:19:45.000000Z",
+                "treatment": {
+                    "cghs_treatment_id": 1,
+                    "clinic_id": 1,
+                    "branch_id": 12,
+                    "cghs_treatment_name": "Root Canal Treatment",
+                    "amount": "450.00",
+                    "code": "1001",
+                    "created_at": "2026-08-05T06:47:21.000000Z",
+                    "updated_at": "2026-08-05T09:53:53.000000Z",
+                    "cghs_type": 1
+                }
+            }
+        ]
+    }
+}
+
+------------------------------------------------
+URL : https://vgdcapp.vrajdentalclinic.com/api/cghs-patient-invoice-detail-list
+
+Request : 
+{
+    "iCghsPatientInvoiceId" : "1"
+}
+
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice detail list fetched successfully.",
+    "details": [
+        {
+            "id": 1,
+            "iCghsPatientInvoiceId": 1,
+            "cghs_treatment_id": 1,
+            "cghs_treatment_name": "Root Canal Treatment",
+            "iQty": 1,
+            "iAmount": "4500.00",
+            "iEnterBy": 4,
+            "iUpdatedBy": 4,
+            "created_at": "2026-08-05T09:19:45.000000Z",
+            "updated_at": "2026-08-05T09:19:45.000000Z",
+            "treatment": {
+                "cghs_treatment_id": 1,
+                "clinic_id": 1,
+                "branch_id": 12,
+                "cghs_treatment_name": "Root Canal Treatment",
+                "amount": "450.00",
+                "code": "1001",
+                "created_at": "2026-08-05T06:47:21.000000Z",
+                "updated_at": "2026-08-05T09:53:53.000000Z",
+                "cghs_type": 1
+            }
+        },
+        {
+            "id": 2,
+            "iCghsPatientInvoiceId": 1,
+            "cghs_treatment_id": 1,
+            "cghs_treatment_name": "Root Canal Treatment",
+            "iQty": 1,
+            "iAmount": "4500.00",
+            "iEnterBy": 4,
+            "iUpdatedBy": 4,
+            "created_at": "2026-08-05T09:52:42.000000Z",
+            "updated_at": "2026-08-05T09:55:53.000000Z",
+            "treatment": {
+                "cghs_treatment_id": 1,
+                "clinic_id": 1,
+                "branch_id": 12,
+                "cghs_treatment_name": "Root Canal Treatment",
+                "amount": "450.00",
+                "code": "1001",
+                "created_at": "2026-08-05T06:47:21.000000Z",
+                "updated_at": "2026-08-05T09:53:53.000000Z",
+                "cghs_type": 1
+            }
+        }
+    ]
+}
+---------------------------------------------------
+URL : https://vgdcapp.vrajdentalclinic.com/api/destroy-cghs-patient-invoice
+
+Request : 
+{
+    "id" : "2"
+}
+
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice deleted successfully."
+}
+--------------------------------
+URL : https://vgdcapp.vrajdentalclinic.com/api/submit-cghs-patient-invoice
+Request : 
+{
+    "id" : "1",
+    "amount" : "4500.00",
+    "discount_amount" : "4000.00",
+    "total_amount" : "4000.00"
+}
+ 
+Response : 
+{
+    "status": "success",
+    "message": "CGHS patient invoice submitted successfully.",
+    "invoice": {
+        "id": 1,
+        "clinic_id": 1,
+        "branch_id": 12,
+        "patient_id": 1325,
+        "cghs_date": "2026-08-06T00:00:00.000000Z",
+        "amount": "4500.00",
+        "discount_amount": "4000.00",
+        "total_amount": "4000.00",
+        "cghs_type": {
+            "id": 1,
+            "strCghsName": "CGHS",
+            "created_at": "2026-08-05T11:04:27.000000Z",
+            "updated_at": "2026-08-05T11:04:27.000000Z"
+        },
+        "patient_name": "Mr. Tarang",
+        "iEnterBy": 4,
+        "strCghsGUID": "1679f4c3-ca00-42db-b9f9-abacdfeacf83",
+        "isCghsSubmit": 1,
+        "isCghsSubmitBy": 4,
+        "isSharedWithAdmin": 0,
+        "created_at": "2026-08-05T09:37:48.000000Z",
+        "updated_at": "2026-08-05T10:18:27.000000Z",
+        "patient": null,
+        "details": [
+            {
+                "id": 1,
+                "iCghsPatientInvoiceId": 1,
+                "cghs_treatment_id": 1,
+                "cghs_treatment_name": "Root Canal Treatment",
+                "iQty": 1,
+                "iAmount": "4500.00",
+                "iEnterBy": 4,
+                "iUpdatedBy": 4,
+                "created_at": "2026-08-05T09:19:45.000000Z",
+                "updated_at": "2026-08-05T09:19:45.000000Z",
+                "treatment": {
+                    "cghs_treatment_id": 1,
+                    "clinic_id": 1,
+                    "branch_id": 12,
+                    "cghs_treatment_name": "Root Canal Treatment",
+                    "amount": "450.00",
+                    "code": "1001",
+                    "created_at": "2026-08-05T06:47:21.000000Z",
+                    "updated_at": "2026-08-05T09:53:53.000000Z",
+                    "cghs_type": 1
+                }
+            },
+            {
+                "id": 2,
+                "iCghsPatientInvoiceId": 1,
+                "cghs_treatment_id": 1,
+                "cghs_treatment_name": "Root Canal Treatment",
+                "iQty": 1,
+                "iAmount": "4500.00",
+                "iEnterBy": 4,
+                "iUpdatedBy": 4,
+                "created_at": "2026-08-05T09:52:42.000000Z",
+                "updated_at": "2026-08-05T09:55:53.000000Z",
+                "treatment": {
+                    "cghs_treatment_id": 1,
+                    "clinic_id": 1,
+                    "branch_id": 12,
+                    "cghs_treatment_name": "Root Canal Treatment",
+                    "amount": "450.00",
+                    "code": "1001",
+                    "created_at": "2026-08-05T06:47:21.000000Z",
+                    "updated_at": "2026-08-05T09:53:53.000000Z",
+                    "cghs_type": 1
+                }
+            }
+        ]
+    }
+}
+
