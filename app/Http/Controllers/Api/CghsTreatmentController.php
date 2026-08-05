@@ -30,6 +30,7 @@ class CghsTreatmentController extends Controller
             ],
             'amount' => 'required|numeric|min:0',
             'code' => 'nullable|string|max:255',
+            'cghs_type' => 'nullable|exists:cghs_type_masters,id',
         ]);
 
         $cghsTreatment = CghsTreatment::create($request->only([
@@ -38,6 +39,7 @@ class CghsTreatmentController extends Controller
             'cghs_treatment_name',
             'amount',
             'code',
+            'cghs_type',
         ]));
 
         return response()->json([
@@ -76,6 +78,7 @@ class CghsTreatmentController extends Controller
             ],
             'amount' => 'required|numeric|min:0',
             'code' => 'nullable|string|max:255',
+            'cghs_type' => 'nullable|exists:cghs_type_masters,id',
         ]);
 
         $cghsTreatment->update($request->only([
@@ -84,6 +87,7 @@ class CghsTreatmentController extends Controller
             'cghs_treatment_name',
             'amount',
             'code',
+            'cghs_type',
         ]));
 
         return response()->json([
@@ -99,7 +103,7 @@ class CghsTreatmentController extends Controller
             return $this->unauthorisedResponse();
         }
 
-        $query = CghsTreatment::query();
+        $query = CghsTreatment::with('type');
 
         if ($request->filled('clinic_id')) {
             $query->where('clinic_id', $request->clinic_id);
@@ -107,6 +111,10 @@ class CghsTreatmentController extends Controller
 
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('cghs_type')) {
+            $query->where('cghs_type', $request->cghs_type);
         }
 
         if ($request->filled('search')) {
@@ -148,6 +156,21 @@ class CghsTreatmentController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS Treatment deleted successfully.',
+        ]);
+    }
+
+     public function cghsTypeMasterList(Request $request)
+    {
+        if (!Auth::user()) {
+            return $this->unauthorisedResponse();
+        }
+
+        $cghsTypeMaster = CghsTypeMaster::orderBy('strCghsName')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'CGHS Type Master list fetched successfully.',
+            'cghs_type_master' => $cghsTypeMaster,
         ]);
     }
 

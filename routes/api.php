@@ -129,6 +129,7 @@ Route::get('destroygroup/{id}', 'App\Http\Controllers\Api\GroupController@destro
 Route::post('add-cghs-treatment', 'App\Http\Controllers\Api\CghsTreatmentController@addCghsTreatment');
 Route::post('update-cghs-treatment', 'App\Http\Controllers\Api\CghsTreatmentController@updateCghsTreatment');
 Route::post('cghs-treatment-list', 'App\Http\Controllers\Api\CghsTreatmentController@allCghsTreatment');
+Route::post('cghs-type-master-list', 'App\Http\Controllers\Api\CghsTreatmentController@cghsTypeMasterList');
 Route::post('destroy-cghs-treatment', 'App\Http\Controllers\Api\CghsTreatmentController@destroyCghsTreatment');
 
 Route::post('add-treatment', 'App\Http\Controllers\Api\TreatmentsController@addTreatment');
