@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // Public consent links may remain open longer than the browser session.
+        'upload',
     ];
 }
