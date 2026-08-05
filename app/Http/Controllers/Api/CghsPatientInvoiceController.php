@@ -51,7 +51,8 @@ class CghsPatientInvoiceController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS patient invoice created successfully.',
-            'invoice' => $invoice->load(['patient', 'details.treatment', 'cghsType']),
+            // 'invoice' => $invoice->load(['patient', 'details.treatment', 'cghsType']),
+            'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
     }
 
@@ -99,7 +100,8 @@ class CghsPatientInvoiceController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS patient invoice updated successfully.',
-            'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            //'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
     }
 
@@ -109,7 +111,8 @@ class CghsPatientInvoiceController extends Controller
             return $this->unauthorisedResponse();
         }
 
-        $query = CghsPatientInvoice::with(['patient', 'details.treatment', 'cghsType']);
+        //$query = CghsPatientInvoice::with(['patient', 'details.treatment', 'cghsType']);
+        $query = CghsPatientInvoice::with($this->invoiceRelations());
 
         $id = $this->filledRequestValue($request, 'id');
         if ($id !== null) {
@@ -208,7 +211,7 @@ class CghsPatientInvoiceController extends Controller
                 'iQty' => $request->iQty,
                 'iAmount' => $request->iAmount,
                 'iEnterBy' => $user->user_id,
-                'iUpdatedBy' => null,
+                'iUpdatedBy' => $user->user_id,
             ]);
 
             $this->refreshInvoiceTotals($invoice);
@@ -220,7 +223,8 @@ class CghsPatientInvoiceController extends Controller
             'status' => 'success',
             'message' => 'CGHS patient invoice detail created successfully.',
             'detail' => $detail->load('treatment'),
-            'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            //'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
     }
 
@@ -249,7 +253,8 @@ class CghsPatientInvoiceController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS patient invoice detail deleted successfully.',
-            'invoice' => $invoice ? $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']) : null,
+            //'invoice' => $invoice ? $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']) : null,
+            'invoice' => $invoice ? $this->loadInvoiceForResponse($invoice) : null,
         ]);
     }
 
@@ -285,8 +290,26 @@ class CghsPatientInvoiceController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS patient invoice submitted successfully.',
-            'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            //'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
+    }
+
+    private function invoiceRelations()
+    {
+        return [
+            'patient',
+            'details' => function ($query) {
+                $query->orderBy('id');
+            },
+            'details.treatment',
+            'cghsType',
+        ];
+    }
+
+    private function loadInvoiceForResponse(CghsPatientInvoice $invoice)
+    {
+        return CghsPatientInvoice::with($this->invoiceRelations())->find($invoice->id);
     }
 
     private function filledRequestValue(Request $request, $key)
