@@ -379,10 +379,7 @@ class CghsPatientInvoiceController extends Controller
 
         $pdfData = $this->generateAndStoreCghsInvoicePdf($invoice);
 
-        return response()->file($pdfData['file_path'], [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $pdfData['file_name'] . '"',
-        ]);
+        return redirect()->away($pdfData['pdf_url']);
     }
     
     public function submitCghsPatientInvoice(Request $request)
