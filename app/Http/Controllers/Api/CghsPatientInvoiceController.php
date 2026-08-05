@@ -11,6 +11,7 @@ use App\Services\AuthkeyWhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -265,18 +266,15 @@ class CghsPatientInvoiceController extends Controller
         if (!Auth::user()) {
             return $this->unauthorisedResponse();
         }
-
         $detail = CghsPatientInvoiceDetail::find($request->id);
 
         if (!$detail) {
             return $this->notFoundResponse('CGHS patient invoice detail not found.');
         }
-
         $invoice = $detail->invoice;
 
         DB::transaction(function () use ($detail, $invoice) {
             $detail->delete();
-
             if ($invoice) {
                 $this->refreshInvoiceTotals($invoice);
             }
@@ -328,10 +326,10 @@ class CghsPatientInvoiceController extends Controller
         $whatsappService = new AuthkeyWhatsAppService();
         $whatsappResponse = $whatsappService->sendText(
             $adminMobileNo,
-            $request->wid ?? '28846',
+            $request->wid ?? '42471',
             [
-                '1' => $invoice->patient_name,
-                '2' => $invoiceLink,
+                //'1' => $invoice->patient_name,
+                '1' => $invoiceLink,
             ]
         );
 
@@ -360,9 +358,24 @@ class CghsPatientInvoiceController extends Controller
             'invoice' => $invoice,
         ]);
 
-        return $pdf->stream('cghs-patient-invoice-' . $invoice->id . '.pdf');
-    }
+        $fileName = $this->cghsInvoicePdfFileName($invoice);
+        $directory = $this->cghsInvoicePdfDirectory();
 
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        $pdf->save($directory . DIRECTORY_SEPARATOR . $fileName);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'CGHS patient invoice PDF generated successfully.',
+            'invoice_no' => $invoice->id,
+            'file_name' => $fileName,
+            'pdf_url' => url('cghs/invoice/' . $fileName),
+        ]);
+    }
+    
     public function submitCghsPatientInvoice(Request $request)
     {
         $user = Auth::user();
@@ -406,7 +419,7 @@ class CghsPatientInvoiceController extends Controller
             return $requestedMobileNo;
         }
 
-        $adminQuery = User::where('is_admin', 1)->whereNotNull('mobile_no');
+        $adminQuery = User::where('isadmin', 1)->where('role_id', 1)->whereNotNull('mobile_no');
 
         if (!empty($invoice->clinic_id)) {
             $adminQuery->where('clinic_id', $invoice->clinic_id);
@@ -415,13 +428,15 @@ class CghsPatientInvoiceController extends Controller
         $admin = $adminQuery->orderBy('user_id')->first();
 
         if (!$admin) {
-            $admin = User::where('is_admin', 1)
+            $admin = User::where('isadmin', 1)
+                ->where('role_id', 1)
                 ->whereNotNull('mobile_no')
                 ->orderBy('user_id')
                 ->first();
         }
 
-        return optional($admin)->mobile_no;
+        //return optional($admin)->mobile_no;
+        return "7046673769";
     }
     
     private function invoiceRelations()
@@ -469,6 +484,22 @@ class CghsPatientInvoiceController extends Controller
         ])->save();
     }
 
+    private function cghsInvoicePdfFileName(CghsPatientInvoice $invoice)
+    {
+        return 'cghs-patient-invoice-' . preg_replace('/[^A-Za-z0-9_-]/', '-', (string) $invoice->id) . '.pdf';
+    }
+
+    private function cghsInvoicePdfDirectory()
+    {
+        $publicHtmlPath = base_path('../public_html');
+
+        if (File::isDirectory($publicHtmlPath)) {
+            return $publicHtmlPath . DIRECTORY_SEPARATOR . 'cghs' . DIRECTORY_SEPARATOR . 'invoice';
+        }
+
+        return base_path('public_html/cghs/invoice');
+    }
+    
     private function unauthorisedResponse()
     {
         return response()->json([
