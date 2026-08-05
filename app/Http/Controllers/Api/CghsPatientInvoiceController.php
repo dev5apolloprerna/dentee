@@ -303,10 +303,13 @@ class CghsPatientInvoiceController extends Controller
 
     private function refreshInvoiceTotals(CghsPatientInvoice $invoice)
     {
-        $amount = $invoice->details()
+        $invoice->refresh();
+
+        $amount = (float) CghsPatientInvoiceDetail::where('iCghsPatientInvoiceId', $invoice->id)
             ->selectRaw('COALESCE(SUM(iQty * iAmount), 0) as invoice_amount')
             ->value('invoice_amount');
-        $discountAmount = $invoice->discount_amount ?? 0;
+
+        $discountAmount = (float) ($invoice->discount_amount ?? 0);
 
         $invoice->forceFill([
             'amount' => $amount,

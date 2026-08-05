@@ -29,6 +29,10 @@ class CghsPatientInvoice extends Model
         'iEnterBy',
     ];
 
+     protected $hidden = [
+        'deleted_at',
+    ];
+
     protected $casts = [
         'cghs_date' => 'date',
         'amount' => 'decimal:2',
@@ -44,7 +48,7 @@ class CghsPatientInvoice extends Model
             'patient_id'
         );
     }
-    
+
     public function details()
     {
         return $this->hasMany(
