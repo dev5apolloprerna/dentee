@@ -15,17 +15,17 @@ class CghsPatientInvoice extends Model
         'clinic_id',
         'branch_id',
         'patient_id',
+        'patient_name',
         'cghs_date',
         'amount',
         'discount_amount',
         'total_amount',
         'cghs_type',
-        'patient_name',
-        'iEnterBy',
         'strCghsGUID',
         'isCghsSubmit',
         'isCghsSubmitBy',
         'isSharedWithAdmin',
+        'iEnterBy',
     ];
 
     protected $casts = [

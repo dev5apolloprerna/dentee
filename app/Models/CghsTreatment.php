@@ -19,11 +19,21 @@ class CghsTreatment extends Model
         'cghs_treatment_name',
         'amount',
         'code',
+        'cghs_type',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
     ];
+
+    public function type()
+    {
+        return $this->belongsTo(
+            CghsTypeMaster::class,
+            'cghs_type',
+            'id'
+        );
+    }
 
     public function invoiceDetails()
     {

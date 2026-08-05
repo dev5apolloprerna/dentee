@@ -12,10 +12,21 @@ class CghsTypeMaster extends Model
         'strCghsName',
     ];
 
-    public $timestamps = true;
+    public function treatments()
+    {
+        return $this->hasMany(
+            CghsTreatment::class,
+            'cghs_type',
+            'id'
+        );
+    }
 
     public function invoices()
     {
-        return $this->hasMany(CghsPatientInvoice::class, 'cghs_type', 'id');
+        return $this->hasMany(
+            CghsPatientInvoice::class,
+            'cghs_type',
+            'id'
+        );
     }
 }
