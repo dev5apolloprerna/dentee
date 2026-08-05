@@ -322,9 +322,8 @@ class CghsPatientInvoiceController extends Controller
                 'message' => 'Admin mobile number not found.',
             ], 404);
         }
-        $pdf = $this->viewCghsPatientInvoicePdf($invoice->strCghsGUID);
-        dd($pdf->getData()->pdf_url);
-        $invoiceLink = $pdf->getData()->pdf_url;
+        $pdfData = $this->generateAndStoreCghsInvoicePdf($invoice);
+        $invoiceLink = $pdfData['pdf_url'];
         $whatsappService = new AuthkeyWhatsAppService();
         $whatsappResponse = $whatsappService->sendText(
             $adminMobileNo,
@@ -356,26 +355,13 @@ class CghsPatientInvoiceController extends Controller
             abort(404, 'CGHS patient invoice not found.');
         }
 
-        $pdf = Pdf::loadView('cghs_patient_invoice', [
-            'invoice' => $invoice,
-        ]);
+        $pdfData = $this->generateAndStoreCghsInvoicePdf($invoice);
 
-        $fileName = $this->cghsInvoicePdfFileName($invoice);
-        $directory = $this->cghsInvoicePdfDirectory();
-
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        $pdf->save($directory . DIRECTORY_SEPARATOR . $fileName);
-
-        return response()->json([
+        return response()->json(array_merge([
             'status' => 'success',
             'message' => 'CGHS patient invoice PDF generated successfully.',
             'invoice_no' => $invoice->id,
-            'file_name' => $fileName,
-            'pdf_url' => url('cghs/invoice/' . $fileName),
-        ]);
+            ], $pdfData));
     }
     
     public function submitCghsPatientInvoice(Request $request)
@@ -486,6 +472,31 @@ class CghsPatientInvoiceController extends Controller
         ])->save();
     }
 
+    private function generateAndStoreCghsInvoicePdf(CghsPatientInvoice $invoice)
+    {
+        $invoice->loadMissing($this->invoiceRelations());
+
+        $pdf = Pdf::loadView('cghs_patient_invoice', [
+            'invoice' => $invoice,
+        ]);
+
+        $fileName = $this->cghsInvoicePdfFileName($invoice);
+        $directory = $this->cghsInvoicePdfDirectory();
+
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        $filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
+        $pdf->save($filePath);
+
+        return [
+            'file_name' => $fileName,
+            'file_path' => $filePath,
+            'pdf_url' => url('cghs/invoice/' . $fileName),
+        ];
+    }
+    
     private function cghsInvoicePdfFileName(CghsPatientInvoice $invoice)
     {
         return 'cghs-patient-invoice-' . preg_replace('/[^A-Za-z0-9_-]/', '-', (string) $invoice->id) . '.pdf';
@@ -493,13 +504,20 @@ class CghsPatientInvoiceController extends Controller
 
     private function cghsInvoicePdfDirectory()
     {
-        $publicHtmlPath = base_path('../public_html');
-
-        if (File::isDirectory($publicHtmlPath)) {
-            return $publicHtmlPath . DIRECTORY_SEPARATOR . 'cghs' . DIRECTORY_SEPARATOR . 'invoice';
+        $publicHtmlPath = "";
+        if($_SERVER['SERVER_NAME'] == "127.0.0.1"){
+            $publicHtmlPath = public_path('assets/cghs/invoice');
+        } else {
+            $publicHtmlPath = public_path('../../vgdcapp.vrajdentalclinic.com/assets/cghs/invoice');
         }
 
-        return base_path('public_html/cghs/invoice');
+        if (File::isDirectory($publicHtmlPath)) {
+            //return $publicHtmlPath . DIRECTORY_SEPARATOR . 'cghs' . DIRECTORY_SEPARATOR . 'invoice';
+            return $publicHtmlPath;
+        }
+
+        // return public_path('cghs/invoice');
+        return $publicHtmlPath;
     }
     
     private function unauthorisedResponse()
