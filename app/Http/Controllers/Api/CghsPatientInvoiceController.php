@@ -313,7 +313,7 @@ class CghsPatientInvoiceController extends Controller
         $invoice->isSharedWithAdmin = 1;
         $invoice->save();
 
-        $invoiceLink = url('api/cghs-patient-invoice-pdf/' . $invoice->strCghsGUID);
+        // $invoiceLink = url('api/cghs-patient-invoice-pdf/' . $invoice->strCghsGUID);
         $adminMobileNo = $this->adminMobileNoForInvoice($invoice, $request->admin_mobile);
 
         if (!$adminMobileNo) {
@@ -322,7 +322,9 @@ class CghsPatientInvoiceController extends Controller
                 'message' => 'Admin mobile number not found.',
             ], 404);
         }
-
+        $pdf = $this->viewCghsPatientInvoicePdf($invoice->strCghsGUID);
+        dd($pdf->getData()->pdf_url);
+        $invoiceLink = $pdf->getData()->pdf_url;
         $whatsappService = new AuthkeyWhatsAppService();
         $whatsappResponse = $whatsappService->sendText(
             $adminMobileNo,
