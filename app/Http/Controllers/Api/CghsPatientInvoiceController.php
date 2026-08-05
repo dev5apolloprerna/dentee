@@ -111,28 +111,33 @@ class CghsPatientInvoiceController extends Controller
 
         $query = CghsPatientInvoice::with(['patient', 'details.treatment', 'cghsType']);
 
-        if ($request->filled('id')) {
-            $query->where('id', $request->id);
+        $id = $this->filledRequestValue($request, 'id');
+        if ($id !== null) {
+            $query->where('id', $id);
         }
 
-        if ($request->filled('clinic_id')) {
-            $query->where('clinic_id', $request->clinic_id);
+        $clinicId = $this->filledRequestValue($request, 'clinic_id');
+        if ($clinicId !== null) {
+            $query->where('clinic_id', $clinicId);
         }
 
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->branch_id);
+        $branchId = $this->filledRequestValue($request, 'branch_id');
+        if ($branchId !== null) {
+            $query->where('branch_id', $branchId);
         }
 
-        if ($request->filled('patient_id')) {
-            $query->where('patient_id', $request->patient_id);
+        $patientId = $this->filledRequestValue($request, 'patient_id');
+        if ($patientId !== null) {
+            $query->where('patient_id', $patientId);
         }
 
-        if ($request->filled('isCghsSubmit')) {
-            $query->where('isCghsSubmit', $request->isCghsSubmit);
+        $isCghsSubmit = $this->filledRequestValue($request, 'isCghsSubmit');
+        if ($isCghsSubmit !== null) {
+            $query->where('isCghsSubmit', $isCghsSubmit);
         }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        $search = $this->filledRequestValue($request, 'search');
+        if ($search !== null) {
             $query->where(function ($searchQuery) use ($search) {
                 $searchQuery->where('patient_name', 'like', '%' . $search . '%')
                     ->orWhere('strCghsGUID', 'like', '%' . $search . '%');
@@ -282,6 +287,18 @@ class CghsPatientInvoiceController extends Controller
             'message' => 'CGHS patient invoice submitted successfully.',
             'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
         ]);
+    }
+
+    private function filledRequestValue(Request $request, $key)
+    {
+        if (!$request->has($key)) {
+            return null;
+        }
+        $value = $request->input($key);
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+        return $value === '' ? null : $value;
     }
 
     private function refreshInvoiceTotals(CghsPatientInvoice $invoice)

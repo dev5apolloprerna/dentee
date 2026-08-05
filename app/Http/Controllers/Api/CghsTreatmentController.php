@@ -17,6 +17,10 @@ class CghsTreatmentController extends Controller
             return $this->unauthorisedResponse();
         }
 
+        if ($this->cghsTreatmentExists($request)) {
+            return $this->duplicateTreatmentResponse();
+        }
+
         $request->validate([
             'clinic_id' => 'required',
             'branch_id' => 'required',
@@ -62,6 +66,10 @@ class CghsTreatmentController extends Controller
                 'status' => 'error',
                 'message' => 'CGHS Treatment not found.',
             ], 404);
+        }
+
+        if ($this->cghsTreatmentExists($request, $request->id)) {
+            return $this->duplicateTreatmentResponse();
         }
 
         $request->validate([
@@ -174,6 +182,35 @@ class CghsTreatmentController extends Controller
         ]);
     }
 
+     private function cghsTreatmentExists(Request $request, $ignoreId = null)
+    {
+        $name = trim((string) $request->cghs_treatment_name);
+
+        if ($name === '' || !$request->filled('branch_id')) {
+            return false;
+        }
+
+        $query = CghsTreatment::where('branch_id', $request->branch_id)
+            ->whereRaw('LOWER(TRIM(cghs_treatment_name)) = ?', [strtolower($name)]);
+
+        if ($ignoreId) {
+            $query->where('cghs_treatment_id', '<>', $ignoreId);
+        }
+
+        return $query->exists();
+    }
+
+    private function duplicateTreatmentResponse()
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'CGHS Treatment Name is already exist.',
+            'errors' => [
+                'cghs_treatment_name' => ['CGHS Treatment Name is already exist.'],
+            ],
+        ], 422);
+    }
+    
     private function unauthorisedResponse()
     {
         return response()->json([
