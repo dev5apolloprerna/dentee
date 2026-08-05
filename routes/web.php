@@ -44,7 +44,8 @@ Route::get('csrf-token', function (Request $request) {
 
 Route::get('concentform/{id?}/{iConcernFormId?}/{PatientsConcernFormId?}', 'App\Http\Controllers\Api\PrescriptionController@concentform');
 Route::post('upload', 'App\Http\Controllers\Api\PrescriptionController@upload')->name('patient.upload');
-
+Route::get('{patientName}/{guid}', 'App\Http\Controllers\Api\CghsPatientInvoiceController@viewCghsPatientInvoicePdfOnWeb')
+    ->where('guid', '[0-9a-fA-F-]{36}');
 
 Route::get('signaturepad', [SignaturePadController::class, 'index']);
 Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');

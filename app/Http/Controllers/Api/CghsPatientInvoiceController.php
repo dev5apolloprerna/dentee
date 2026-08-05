@@ -152,7 +152,10 @@ class CghsPatientInvoiceController extends Controller
         }
 
         $invoices = $query->orderByDesc('id')->get();
-
+        $invoices->each(function ($invoice) {
+            $this->prepareInvoiceWebUrl($invoice);
+        });
+        
         return response()->json([
             'status' => 'success',
             'message' => 'CGHS patient invoice list fetched successfully.',
@@ -364,6 +367,24 @@ class CghsPatientInvoiceController extends Controller
             ], $pdfData));
     }
     
+    public function viewCghsPatientInvoicePdfOnWeb($patientName, $guid)
+    {
+        $invoice = CghsPatientInvoice::with($this->invoiceRelations())
+            ->where('strCghsGUID', $guid)
+            ->first();
+
+        if (!$invoice) {
+            abort(404, 'CGHS patient invoice not found.');
+        }
+
+        $pdfData = $this->generateAndStoreCghsInvoicePdf($invoice);
+
+        return response()->file($pdfData['file_path'], [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $pdfData['file_name'] . '"',
+        ]);
+    }
+    
     public function submitCghsPatientInvoice(Request $request)
     {
         $user = Auth::user();
@@ -441,7 +462,36 @@ class CghsPatientInvoiceController extends Controller
 
     private function loadInvoiceForResponse(CghsPatientInvoice $invoice)
     {
-        return CghsPatientInvoice::with($this->invoiceRelations())->find($invoice->id);
+        $invoice = CghsPatientInvoice::with($this->invoiceRelations())->find($invoice->id);
+        return $invoice ? $this->prepareInvoiceWebUrl($invoice) : null;
+    }
+    
+    private function prepareInvoiceWebUrl(CghsPatientInvoice $invoice)
+    {
+        if (empty($invoice->strCghsGUID)) {
+            $invoice->strCghsGUID = (string) Str::uuid();
+            $invoice->save();
+        }
+
+        $invoice->setAttribute('web_invoice_url', $this->cghsInvoiceWebUrl($invoice));
+
+        return $invoice;
+    }
+
+    private function cghsInvoiceWebUrl(CghsPatientInvoice $invoice)
+    {
+        return 'https://vgdcapp.vrajdentalclinic.com/' . $this->cghsInvoiceWebPath($invoice);
+    }
+
+    private function cghsInvoiceWebPath(CghsPatientInvoice $invoice)
+    {
+        $patientName = Str::slug($invoice->patient_name ?? 'patient');
+
+        if ($patientName === '') {
+            $patientName = 'patient';
+        }
+
+        return $patientName . '/' . $invoice->strCghsGUID;
     }
 
     private function filledRequestValue(Request $request, $key)
@@ -493,7 +543,7 @@ class CghsPatientInvoiceController extends Controller
         return [
             'file_name' => $fileName,
             'file_path' => $filePath,
-            'pdf_url' => url('cghs/invoice/' . $fileName),
+            'pdf_url' => asset('assets/cghs/invoice/' . $fileName),
         ];
     }
     
@@ -516,7 +566,7 @@ class CghsPatientInvoiceController extends Controller
             return $publicHtmlPath;
         }
 
-        // return public_path('cghs/invoice');
+        //return public_path('cghs/invoice');
         return $publicHtmlPath;
     }
     
