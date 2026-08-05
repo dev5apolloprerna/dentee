@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            color: #222;
-            background: #fff;
+        *{
+            margin: 1;
+            padding: 1;
         }
         .invoice-page {
             width: 100%;
@@ -28,9 +20,30 @@
         }
         .logo { text-align: center; margin-bottom: 18px; }
         .logo img { width: 155px; }
-        table { border-collapse: collapse; width: 100%; }
-        td, th { border: 1px solid #255a9b; padding: 7px; vertical-align: middle; }
-        th { background-color: #255a9b; color: #fff; font-weight: bold; }
+        
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            page-break-inside: auto;
+        }
+        
+        table tr th{
+            background-color: #255a9b;
+            color: white;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        
+        thead {
+            display: table-header-group;
+        }
+        
+        tfoot {
+            display: table-footer-group;
+        }
         .title {
             background: #255a9b;
             color: #fff;
@@ -47,15 +60,14 @@
         .no-border { border: none !important; }
         .footer-note { margin-top: 28px; font-size: 11px; color: #555; text-align: center; }
     </style>
-</head>
-<body>
+
     <div class="invoice-page">
-        <img class="header-image" src="{{ public_path('assets/images/New-Header.png') }}" alt="">
+        <img class="header-image" src="https://vgdcapp.vrajdentalclinic.com/assets/images/New-Header.png" alt="">
         <div class="logo">
-            <img src="{{ public_path('assets/images/logo_n.png') }}" alt="Vraj Dental Clinic">
+            <img src="https://vgdcapp.vrajdentalclinic.com/assets/images/logo_n.png" alt="Vraj Dental Clinic">
         </div>
 
-        <table>
+        <table style="width: 100%;background-image: url(https://vgdcapp.vrajdentalclinic.com/assets/images/background.png);!important; padding: 60px;">
             <tr>
                 <td colspan="5" class="title">CGHS PATIENT INVOICE</td>
             </tr>
@@ -104,7 +116,8 @@
             </tr>
         </table>
 
-        <div class="footer-note">This is a computer-generated CGHS patient invoice.</div>
+        <div class="footer-note">
+            This is a computer-generated CGHS patient invoice.
+            <img style="text-align:center;width: 100%;position: absolute;bottom:0px;left:0px;" src="https://vgdcapp.vrajdentalclinic.com/assets/images/new-footer.png" alt="">    
+        </div>
     </div>
-</body>
-</html>
