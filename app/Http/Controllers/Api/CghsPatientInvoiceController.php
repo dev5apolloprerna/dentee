@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\CghsPatientInvoice;
 use App\Models\CghsPatientInvoiceDetail;
 use App\Models\CghsTreatment;
+use App\Models\User;
+use App\Services\AuthkeyWhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CghsPatientInvoiceController extends Controller
 {
@@ -210,6 +213,7 @@ class CghsPatientInvoiceController extends Controller
                 'cghs_treatment_name' => $request->cghs_treatment_name ?? optional($treatment)->cghs_treatment_name,
                 'iQty' => $request->iQty,
                 'iAmount' => $request->iAmount,
+                'iTotalAmount' => ($request->iAmount * $request->iQty),
                 'iEnterBy' => $user->user_id,
                 'iUpdatedBy' => $user->user_id,
             ]);
@@ -227,7 +231,7 @@ class CghsPatientInvoiceController extends Controller
             'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
     }
-
+    
     public function cghsPatientInvoiceDetailList(Request $request)
     {
         if (!Auth::user()) {
@@ -245,7 +249,7 @@ class CghsPatientInvoiceController extends Controller
         }
 
         $details = CghsPatientInvoiceDetail::with('treatment')
-            ->where('iCghsPatientInvoiceId', $invoice->iCghsPatientInvoiceId)
+            ->where('iCghsPatientInvoiceId', $invoice->id)
             ->orderBy('id')
             ->get();
 
@@ -286,6 +290,79 @@ class CghsPatientInvoiceController extends Controller
         ]);
     }
 
+    public function shareCghsPatientInvoiceToAdmin(Request $request)
+    {
+        if (!Auth::user()) {
+            return $this->unauthorisedResponse();
+        }
+
+        $request->validate([
+            'id' => 'required',
+            'admin_mobile' => 'nullable|numeric|digits:10',
+            'wid' => 'nullable',
+        ]);
+
+        $invoice = CghsPatientInvoice::find($request->id);
+
+        if (!$invoice) {
+            return $this->notFoundResponse('CGHS patient invoice not found.');
+        }
+
+        if (empty($invoice->strCghsGUID)) {
+            $invoice->strCghsGUID = (string) Str::uuid();
+        }
+
+        $invoice->isSharedWithAdmin = 1;
+        $invoice->save();
+
+        $invoiceLink = url('api/cghs-patient-invoice-pdf/' . $invoice->strCghsGUID);
+        $adminMobileNo = $this->adminMobileNoForInvoice($invoice, $request->admin_mobile);
+
+        if (!$adminMobileNo) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Admin mobile number not found.',
+            ], 404);
+        }
+
+        $whatsappService = new AuthkeyWhatsAppService();
+        $whatsappResponse = $whatsappService->sendText(
+            $adminMobileNo,
+            $request->wid ?? '28846',
+            [
+                '1' => $invoice->patient_name,
+                '2' => $invoiceLink,
+            ]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'CGHS patient invoice shared with admin successfully.',
+            'invoice_link' => $invoiceLink,
+            'admin_mobile' => $adminMobileNo,
+            'whatsapp_response' => $whatsappResponse,
+            'invoice' => $this->loadInvoiceForResponse($invoice),
+        ]);
+    }
+
+    public function viewCghsPatientInvoicePdf($guid)
+    {
+        $invoice = CghsPatientInvoice::with($this->invoiceRelations())
+            ->where('strCghsGUID', $guid)
+            ->where('isSharedWithAdmin', 1)
+            ->first();
+
+        if (!$invoice) {
+            abort(404, 'CGHS patient invoice not found.');
+        }
+
+        $pdf = Pdf::loadView('cghs_patient_invoice', [
+            'invoice' => $invoice,
+        ]);
+
+        return $pdf->stream('cghs-patient-invoice-' . $invoice->id . '.pdf');
+    }
+
     public function submitCghsPatientInvoice(Request $request)
     {
         $user = Auth::user();
@@ -323,6 +400,30 @@ class CghsPatientInvoiceController extends Controller
         ]);
     }
 
+    private function adminMobileNoForInvoice(CghsPatientInvoice $invoice, $requestedMobileNo = null)
+    {
+        if (!empty($requestedMobileNo)) {
+            return $requestedMobileNo;
+        }
+
+        $adminQuery = User::where('is_admin', 1)->whereNotNull('mobile_no');
+
+        if (!empty($invoice->clinic_id)) {
+            $adminQuery->where('clinic_id', $invoice->clinic_id);
+        }
+
+        $admin = $adminQuery->orderBy('user_id')->first();
+
+        if (!$admin) {
+            $admin = User::where('is_admin', 1)
+                ->whereNotNull('mobile_no')
+                ->orderBy('user_id')
+                ->first();
+        }
+
+        return optional($admin)->mobile_no;
+    }
+    
     private function invoiceRelations()
     {
         return [

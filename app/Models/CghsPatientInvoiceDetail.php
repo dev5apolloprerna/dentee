@@ -17,8 +17,13 @@ class CghsPatientInvoiceDetail extends Model
         'cghs_treatment_name',
         'iQty',
         'iAmount',
+        'iTotalAmount',
         'iEnterBy',
         'iUpdatedBy',
+    ];
+    
+    protected $hidden = [
+        'deleted_at',
     ];
 
     protected $casts = [
