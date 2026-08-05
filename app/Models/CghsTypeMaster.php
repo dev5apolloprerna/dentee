@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CghsTypeMaster extends Model
+{
+    protected $table = 'cghs_type_masters';
+
+    protected $fillable = [
+        'strCghsName',
+    ];
+
+    public $timestamps = true;
+
+    public function invoices()
+    {
+        return $this->hasMany(CghsPatientInvoice::class, 'cghs_type', 'id');
+    }
+}
