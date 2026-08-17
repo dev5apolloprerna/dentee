@@ -53,19 +53,17 @@
         }
 
         .invoice-content {
-            padding: 58px 60px 105px;
+            padding: 48px 60px 105px;
         }
 
-        .clinic-logo {
-            height: 92px;
-            margin-bottom: 4px;
+        .clinic-header {
+            margin-bottom: 12px;
             text-align: center;
         }
 
-        .clinic-logo img {
-            width: 245px;
-            max-height: 86px;
-            object-fit: contain;
+        .clinic-header img {
+            width: 100%;
+            height: auto;
         }
 
         table {
@@ -150,10 +148,25 @@
             line-height: 1.7;
         }
 
-        .signature {
-            margin-top: 45px;
-            font-weight: bold;
+        .approval {
+            margin-top: 30px;
+            page-break-inside: avoid;
             text-align: right;
+        }
+
+        .approval img {
+            width: 145px;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .signature {
+            font-weight: bold;
+        }
+
+        .proofreading {
+            margin-top: 5px;
+            font-size: 10px;
         }
     </style>
 </head>
@@ -164,8 +177,8 @@
     <img class="page-header" src="https://vgdcapp.vrajdentalclinic.com/assets/images/New-Header.png" alt="">
     <img class="page-footer" src="https://vgdcapp.vrajdentalclinic.com/assets/images/new-footer.png" alt="">
     <main class="invoice-content">
-        <div class="clinic-logo">
-            <img src="https://vgdcapp.vrajdentalclinic.com/assets/images/logo_n.png" alt="Vraj Group of Dental Clinics">
+        <div class="clinic-header">
+            <img src="{{ public_path('assets/images/cghs-invoice-header.svg') }}" alt="Vraj Dental Clinics Pvt. Ltd., GF, Ashouk House 2, Inside Sansthavasahat Gate, Raopura. Mobile: 9558772226. Email: vrajgroupofdental@mail.com">
         </div>
         <table class="title">
             <tr>
@@ -238,7 +251,11 @@
             </tr>
         </table>
         <div class="note">This is a software-generated CGHS patient invoice.</div>
-        <div class="signature">Authorized Signature</div>
+        <div class="approval">
+            <img src="https://vgdcapp.vrajdentalclinic.com/assets/images/stamp.png" alt="Vraj Dental Clinics stamp and signature">
+            <div class="signature">Authorized Signature &amp; Stamp</div>
+            <div class="proofreading">Invoice prepared and proofread by maker.</div>
+        </div>
     </main>
 </body>
 

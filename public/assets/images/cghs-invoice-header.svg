@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="190" viewBox="0 0 1200 190" role="img" aria-labelledby="title description">
+  <title id="title">Vraj Dental Clinics Private Limited</title>
+  <desc id="description">Invoice letterhead with the clinic address, phone number, and email address.</desc>
+  <rect width="1200" height="190" fill="#fff"/>
+  <g transform="translate(38 22)">
+    <circle cx="70" cy="70" r="68" fill="#255a9b"/>
+    <path d="M42 35c13-13 23-4 28-4s15-9 28 4c18 19 3 43-5 62-7 18-9 31-16 31-8 0-3-35-7-35s1 35-7 35c-7 0-9-13-16-31-8-19-23-43-5-62z" fill="#fff"/>
+  </g>
+  <g fill="#172b55" font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="600" y="43" text-anchor="middle" font-size="31" font-weight="700">Vraj Dental Clinics Pvt. Ltd.</text>
+    <text x="600" y="78" text-anchor="middle" font-size="21">GF, Ashouk House 2, Inside Sansthavasahat Gate, Raopura</text>
+    <text x="600" y="112" text-anchor="middle" font-size="21" font-weight="700">M: 9558772226</text>
+    <text x="600" y="146" text-anchor="middle" font-size="21">vrajgroupofdental@mail.com</text>
+  </g>
+  <line x1="0" y1="181" x2="1200" y2="181" stroke="#255a9b" stroke-width="6"/>
+</svg>
