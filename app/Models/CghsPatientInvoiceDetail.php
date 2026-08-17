@@ -17,6 +17,7 @@ class CghsPatientInvoiceDetail extends Model
         'cghs_treatment_name',
         'iQty',
         'iAmount',
+        'selected_teeth',
         'iTotalAmount',
         'iEnterBy',
         'iUpdatedBy',

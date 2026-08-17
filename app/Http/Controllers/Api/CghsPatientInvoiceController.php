@@ -47,6 +47,7 @@ class CghsPatientInvoiceController extends Controller
             'cghs_type' => $request->cghs_type,
             'strCghsGUID' => (string) Str::uuid(),
             'isCghsSubmit' => 0,
+            'isSubmittedToCghs' => 0,
             'isCghsSubmitBy' => 0,
             'isSharedWithAdmin' => $request->isSharedWithAdmin ?? 0,
             'iEnterBy' => $user->user_id,
@@ -75,7 +76,7 @@ class CghsPatientInvoiceController extends Controller
             'patient_id' => 'required',
             'patient_name' => 'required|string|max:255',
             // 'cghs_date' => 'nullable|date',
-            'discount_amount' => 'nullable|numeric|min:0',
+            // 'discount_amount' => 'nullable|numeric|min:0',
             'cghs_type' => 'nullable',
             // 'strCghsGUID' => 'nullable|string|max:255',
         ]);
@@ -92,7 +93,7 @@ class CghsPatientInvoiceController extends Controller
             'patient_id',
             'patient_name',
             // 'cghs_date',
-            'discount_amount',
+            // 'discount_amount',
             'cghs_type',
             // 'strCghsGUID',
             'isSharedWithAdmin',
@@ -198,6 +199,7 @@ class CghsPatientInvoiceController extends Controller
             'iCghsPatientInvoiceId' => 'required',
             'cghs_treatment_id' => 'required',
             'cghs_treatment_name' => 'nullable|string|max:255',
+            'date' => 'required|date',
             'iQty' => 'required|numeric|min:0',
             'iAmount' => 'required|numeric|min:0',
         ]);
@@ -215,6 +217,7 @@ class CghsPatientInvoiceController extends Controller
                 'iCghsPatientInvoiceId' => $invoice->id,
                 'cghs_treatment_id' => $request->cghs_treatment_id,
                 'cghs_treatment_name' => $request->cghs_treatment_name ?? optional($treatment)->cghs_treatment_name,
+                'date' => date('Y-m-d', strtotime($request->date)),
                 'iQty' => $request->iQty,
                 'iAmount' => $request->iAmount,
                 'iTotalAmount' => ($request->iAmount * $request->iQty),
@@ -255,7 +258,15 @@ class CghsPatientInvoiceController extends Controller
         $details = CghsPatientInvoiceDetail::with('treatment')
             ->where('iCghsPatientInvoiceId', $invoice->id)
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->map(function (CghsPatientInvoiceDetail $detail) {
+                $detailData = $detail->toArray();
+                $detailData['date'] = $detail->date
+                    ? date('d-m-Y', strtotime((string) $detail->date))
+                    : null;
+
+                return $detailData;
+            });
 
         return response()->json([
             'status' => 'success',
@@ -393,7 +404,7 @@ class CghsPatientInvoiceController extends Controller
         $request->validate([
             'id' => 'required',
             'amount' => 'required|numeric|min:0',
-            'discount_amount' => 'required|numeric|min:0',
+            // 'discount_amount' => 'required|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
         ]);
 
@@ -405,7 +416,7 @@ class CghsPatientInvoiceController extends Controller
 
         $invoice->update([
             'amount' => $request->amount,
-            'discount_amount' => $request->discount_amount,
+            'discount_amount' => $request->discount_amount ?? 0,
             'total_amount' => $request->total_amount,
             'isCghsSubmit' => 1,
             'isCghsSubmitBy' => $user->user_id,
@@ -415,6 +426,33 @@ class CghsPatientInvoiceController extends Controller
             'status' => 'success',
             'message' => 'CGHS patient invoice submitted successfully.',
             //'invoice' => $invoice->fresh()->load(['patient', 'details.treatment', 'cghsType']),
+            'invoice' => $this->loadInvoiceForResponse($invoice),
+        ]);
+    }
+    
+    public function markCghsPatientInvoiceAsSubmittedToCghs(Request $request)
+    {
+        if (!Auth::user()) {
+            return $this->unauthorisedResponse();
+        }
+
+        $request->validate([
+            'id' => 'required|integer',
+        ]);
+
+        $invoice = CghsPatientInvoice::find($request->id);
+
+        if (!$invoice) {
+            return $this->notFoundResponse('CGHS patient invoice not found.');
+        }
+
+        $invoice->update([
+            'isSubmittedToCghs' => 1,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'CGHS patient invoice marked as submitted to CGHS successfully.',
             'invoice' => $this->loadInvoiceForResponse($invoice),
         ]);
     }

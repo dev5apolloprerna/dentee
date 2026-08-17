@@ -142,6 +142,7 @@ Route::post('destroy-cghs-patient-invoice-detail', 'App\Http\Controllers\Api\Cgh
 Route::post('submit-cghs-patient-invoice', 'App\Http\Controllers\Api\CghsPatientInvoiceController@submitCghsPatientInvoice');
 Route::post('share-cghs-patient-invoice-to-admin', 'App\Http\Controllers\Api\CghsPatientInvoiceController@shareCghsPatientInvoiceToAdmin');
 Route::get('cghs-patient-invoice-pdf/{guid}', 'App\Http\Controllers\Api\CghsPatientInvoiceController@viewCghsPatientInvoicePdf');
+Route::post('mark-cghs-patient-invoice-as-submitted-to-cghs', 'App\Http\Controllers\Api\CghsPatientInvoiceController@markCghsPatientInvoiceAsSubmittedToCghs');
 
 Route::post('add-treatment', 'App\Http\Controllers\Api\TreatmentsController@addTreatment');
 Route::get('destroyTreatment/{id}', 'App\Http\Controllers\Api\TreatmentsController@destroyTreatment');

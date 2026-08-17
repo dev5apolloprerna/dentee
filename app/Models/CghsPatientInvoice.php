@@ -27,6 +27,7 @@ class CghsPatientInvoice extends Model
         'isCghsSubmitBy',
         'isSharedWithAdmin',
         'iEnterBy',
+        'isSubmittedToCghs'
     ];
 
      protected $hidden = [
