@@ -34,8 +34,12 @@ class CghsPatientInvoiceController extends Controller
             'cghs_type' => 'nullable',
             // 'strCghsGUID' => 'nullable|string|max:255',
         ]);
-
+        
+        $lastInvoiceNo = CghsPatientInvoice::max('invoice_no');
+        $invoiceNo = $lastInvoiceNo ? $lastInvoiceNo + 1 : 1001;
+        
         $invoice = CghsPatientInvoice::create([
+            'invoice_no' => $invoiceNo,
             'clinic_id' => $request->clinic_id,
             'branch_id' => $request->branch_id,
             'patient_id' => $request->patient_id,
@@ -220,7 +224,7 @@ class CghsPatientInvoiceController extends Controller
                 'cghs_treatment_name' => $request->cghs_treatment_name ?? optional($treatment)->cghs_treatment_name,
                 'date' => date('Y-m-d', strtotime($request->date)),
                 'iQty' => $request->iQty,
-                'selected_teeth' => $request->selected_teeth ?? '',
+                'selected_teeth' => $request->selected_teeth,
                 'iAmount' => $request->iAmount,
                 'iTotalAmount' => ($request->iAmount * $request->iQty),
                 'iEnterBy' => $user->user_id,
