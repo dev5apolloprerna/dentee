@@ -51,7 +51,8 @@
         <tr style="background-color: #e5e5e5e5;">
             <th style="width: 05%;border-left: 1px solid black;">Sr No</th>
             <th style="width: 15%;border-left: 1px solid black;">Patient Name</th>
-            <th style="width: 10%;border-left: 1px solid black;">Payment Mode</th>
+            <!-- <th style="width: 10%;border-left: 1px solid black;">Payment Mode</th> -->
+            <th style="width: 15%;border-left: 1px solid black;">Phone Number</th>
             <!-- <th style="width: 15%;">Order Date</th> -->
             <th style="width: 15%;border-left: 1px solid black;">Amount</th>
             <th style="width: 30%;border-left: 1px solid black;">Notes</th>
@@ -62,7 +63,8 @@
             <tr>
                 <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $i }}</td>
                 <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;"> {{ $Dailycollection['patient_name'] }}</td>
-                <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $Dailycollection['payment_mode'] }}</td>
+                <!-- <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $Dailycollection['payment_mode'] }}</td> -->
+                <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $Dailycollection['phone_number'] }}</td>
                 <!-- <td style="border-top: 1px solid black;text-align: center;">{{ date('d-m-Y',strtotime($Dailycollection['order_date'])) }}</td> -->
                 <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $Dailycollection['amount'] }}</td>
                 <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;"></td>
