@@ -18,7 +18,7 @@
             margin: 0;
             padding: 0;
             color: #111;
-            font-family: DejaVu Sans, sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 11px;
         }
 
@@ -183,7 +183,7 @@
         <!--<div class="clinic-logo">-->
         <!--    <img src="https://vgdcapp.vrajdentalclinic.com/assets/images/logo_n.png" alt="Vraj Group of Dental Clinics"> CGHS Patient -->
         <div class="clinic-header">
-            <img src="https://vgdcapp.vrajdentalclinic.com/assets/images/cghs-invoice-header.svg" alt="Vraj Dental Clinics Pvt. Ltd., GF, Ashouk House 2, Inside Sansthavasahat Gate, Raopura. Mobile: 9558772226. Email: vrajgroupofdental@mail.com">
+            <img src="{{ public_path('assets/images/cghs-invoice-header.svg') }}" alt="Vraj Dental Clinics Pvt. Ltd., GF, Ashouk House 2, Inside Sansthavasahat Gate, Raopura. Mobile: 9558772226. Email: vrajgroupofdental@mail.com">
         </div>
         <table class="title">
             <tr>

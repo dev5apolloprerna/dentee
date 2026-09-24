@@ -2024,7 +2024,60 @@ class OrderMasterController extends Controller
     		$whatsappfile = $request->whatsappfile;
     		
     		if(Auth::user()){
-    			
+				/*
+				 * A receipt can contain more than one treatment.  Use the allocation
+				 * rows created while collecting the payment instead of assigning the
+				 * complete receipt amount to every treatment in its bill.
+				 */
+				$treatmentCollections = SuggestedTreatmentPayment::select(
+						'suggested_treatments.suggested_treatment_id',
+						'suggested_treatments.treatment_id',
+						'suggested_treatments.treatment_name',
+						'suggested_treatments.selected_teeth_count',
+						DB::raw('SUM(suggested_treatment_payment.amount) as collected_amount')
+					)
+					->join('order_payment_detail', 'order_payment_detail.order_payment_detail_id', '=', 'suggested_treatment_payment.order_payment_detail_id')
+					->join('order_master', 'order_master.order_master_id', '=', 'order_payment_detail.order_id')
+					->join('patients', 'patients.patient_id', '=', 'order_payment_detail.patient_id')
+					->join('suggested_treatments', 'suggested_treatments.suggested_treatment_id', '=', 'suggested_treatment_payment.suggested_treatments_id')
+					->where('order_payment_detail.clinic_id', $clinic_id)
+					->where('order_master.istatus', 0)
+					->where('order_payment_detail.istatus', 0)
+					->where('order_payment_detail.amount', '>', 0)
+					->whereNull('patients.deleted_at')
+					->when($request->branch_id, fn ($query, $branch_id) => $query->whereIn('order_payment_detail.branch_id', $branch_id))
+					->when($request->doctor_id, fn ($query, $doctor_id) => $query->where('suggested_treatments.treatmentBydoctor_id', $doctor_id))
+					->when($request->fromDate, fn ($query) => $query->whereDate('order_payment_detail.payment_date', '>=', $request->fromDate))
+					->when($request->toDate, fn ($query) => $query->whereDate('order_payment_detail.payment_date', '<=', $request->toDate))
+					->when($request->selected_date, fn ($query) => $query->whereDate('order_payment_detail.payment_date', $request->selected_date))
+					->when($request->payment_mode, fn ($query, $payment_mode) => $query->where('order_payment_detail.payment_mode', $payment_mode))
+					->when($request->group_id, fn ($query, $group_id) => $query->where('patients.group_id', $group_id))
+					->when($request->month, fn ($query, $month) => $query->whereMonth('order_payment_detail.payment_date', $month))
+					->when($request->year, fn ($query, $year) => $query->whereYear('order_payment_detail.payment_date', $year))
+					->groupBy(
+						'suggested_treatments.suggested_treatment_id',
+						'suggested_treatments.treatment_id',
+						'suggested_treatments.treatment_name',
+						'suggested_treatments.selected_teeth_count'
+					)
+					->get()
+					->groupBy(function ($treatment) {
+						// Custom treatments may not have a master treatment_id.
+						return ($treatment->treatment_id ?? 'custom').'|'.$treatment->treatment_name;
+					})
+					->map(function ($treatments) {
+						return [
+							'treatment_id' => $treatments->first()->treatment_id,
+							'treatment_name' => $treatments->first()->treatment_name,
+							'amount' => round($treatments->sum('collected_amount'), 2),
+							'quantity' => $treatments->sum(function ($treatment) {
+								return max(1, (int) $treatment->selected_teeth_count);
+							}),
+						];
+					})
+					->values()
+					->all();
+
     			$reportCollection = OrderPaymentDetail::select(
     						DB::raw('sum(order_payment_detail.amount) as amount'),
     						//DB::raw('DATE_FORMAT(order_payment_detail.payment_date, "%d-%M-%Y") as order_date'),
@@ -2161,7 +2214,7 @@ class OrderMasterController extends Controller
     					
     				if($pdffile == 1 && !empty($arr)){
     								
-    					$pdf = PDF::loadView('patientcollection_report',['dailyCollection' => $arr,'grand_total' => $grand_amount,"branchName" => $branchName,"Duration" => $Duration]);
+						$pdf = PDF::loadView('patientcollection_report',['dailyCollection' => $arr,'treatmentCollections' => $treatmentCollections,'grand_total' => $grand_amount,"branchName" => $branchName,"Duration" => $Duration]);
     							
     					$fileName = date('d-m-Y')."_".time()."_patientCollection";
     					
@@ -2213,7 +2266,8 @@ class OrderMasterController extends Controller
     							'status' => 'success',
     							'message' => 'reportData',
     							'grand_total' => $grand_amount,
-    							'dailycollection' => $arr,
+								'treatment_collection' => $treatmentCollections,
+								'dailycollection' => $arr,
     							'dailycollectionFile' => $dailycollectionFile
     						]);
     					}
@@ -2222,7 +2276,8 @@ class OrderMasterController extends Controller
     						'status' => 'success',
     						'message' => 'reportData.',
     						'grand_total' => $grand_amount,
-    						'dailycollection' => $arr,
+							'treatment_collection' => $treatmentCollections,
+							'dailycollection' => $arr,
 						]);
     				}
     			}else{

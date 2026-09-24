@@ -78,6 +78,29 @@
             <?php $i++; ?>
         @endforeach
     </tbody>
+    @if (!empty($treatmentCollections))
+    <tbody>
+        <tr>
+            <td colspan="5" style="padding-top: 20px;text-align: center;border: none;"><b>Treatment-wise Collection</b></td>
+        </tr>
+    </tbody>
+    <tbody style="width: 100%;border: 1px solid black;">
+        <tr style="background-color: #e5e5e5e5;">
+            <th style="width: 10%;border-left: 1px solid black;">Sr No</th>
+            <th colspan="2" style="width: 50%;border-left: 1px solid black;">Treatment</th>
+            <th style="width: 20%;border-left: 1px solid black;">Quantity</th>
+            <th style="width: 20%;border-left: 1px solid black;">Collected Amount</th>
+        </tr>
+        @foreach ($treatmentCollections as $index => $treatment)
+            <tr>
+                <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $index + 1 }}</td>
+                <td colspan="2" style="border-top: 1px solid black;border-left: 1px solid black;">{{ $treatment['treatment_name'] }}</td>
+                <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: center;">{{ $treatment['quantity'] }}</td>
+                <td style="border-top: 1px solid black;border-left: 1px solid black;text-align: right;">{{ number_format($treatment['amount'], 2) }}</td>
+            </tr>
+        @endforeach
+    </tbody>
+    @endif
     <tbody>
         <tr>
             <td colspan="5" style="border: none;"><img style="text-align:center;width: 100%;position: absolute;bottom:0px;left:0px;" src="https://vgdcapp.vrajdentalclinic.com/assets/images//new-footer.png" alt=""></td>

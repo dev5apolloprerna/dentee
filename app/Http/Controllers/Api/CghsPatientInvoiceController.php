@@ -569,6 +569,14 @@ class CghsPatientInvoiceController extends Controller
 
         $pdf = Pdf::loadView('cghs_patient_invoice', [
             'invoice' => $invoice,
+        ])->setOptions([
+            // CGHS accepts uploads up to 1 MB. Standard PDF fonts are not
+            // embedded and font subsetting keeps any fallback glyphs small.
+            'defaultFont' => 'Helvetica',
+            'isFontSubsettingEnabled' => true,
+            // The invoice contains only small branding images; 72 DPI keeps
+            // them clear on screen and in print without bloating the PDF.
+            'dpi' => 72,
         ]);
 
         $fileName = $this->cghsInvoicePdfFileName($invoice);

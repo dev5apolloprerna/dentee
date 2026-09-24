@@ -17,6 +17,7 @@ use App\Models\Document;
 use App\Models\OrderMaster;
 use App\Models\Prescription;
 use App\Models\PrescriptionMedicine;
+use App\Models\Note;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -570,6 +571,7 @@ class PatientController extends Controller
 			$prescriptionCount = Prescription::where(['patient_id' => $id, 'istatus' => 1])->count();
 
 			$DocumentCount = Document::where(['patient_id' => $id])->count();
+			$notesCount = Note::where('patient_id', $id)->count();
 
 			/*  $billingAmount = OrderMaster::select(
 				DB::raw('sum(due_amount) as due_amount'),
@@ -611,6 +613,7 @@ class PatientController extends Controller
 				'treatmentCount' => $treatmentCount,
 				'prescriptionCount' => $prescriptionCount,
 				'DocumentCount' => $DocumentCount,
+				'notesCount' => $notesCount,
 				'appointmentCount' => $appointmentCount,
 				'billingDueAmount' => $billingDueAmount,
 				'prescriptionCount' => $prescriptionCount
