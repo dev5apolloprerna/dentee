@@ -11,6 +11,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
+use App\Exports\CashExpenseExport;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\File;
+
 class CashExpenseController extends Controller
 {
     public function index(Request $request)
@@ -59,6 +64,34 @@ class CashExpenseController extends Controller
                 }
                 
                 $pdffile = $request->pdffile;
+                $export = "";
+                $excelfile = $request->excelfile;
+                if ($excelfile == 1 && !empty($data)) {
+                    $excelName = Str::uuid() . '.xlsx';
+
+                    if (($_SERVER['SERVER_NAME'] ?? $request->getHost()) === '127.0.0.1') {
+                        $excelDirectory = public_path('assets/cash_expenses_excel');
+                    } else {
+                        $excelDirectory = public_path(
+                            '../../vgdcapp.vrajdentalclinic.com/assets/cash_expenses_excel'
+                        );
+                    }
+
+                    File::ensureDirectoryExists($excelDirectory);
+
+                    $excelContent = Excel::raw(
+                        new CashExpenseExport($data),
+                        \Maatwebsite\Excel\Excel::XLSX
+                    );
+
+                    if (File::put($excelDirectory . '/' . $excelName, $excelContent) === false) {
+                        abort(500, 'Unable to save cash expense Excel export.');
+                    }
+
+                    $export = asset(
+                        'assets/cash_expenses_excel/' . $excelName
+                    );
+                }
                 if($pdffile == 1 && !empty($data)){
                     /*usort($data, function($a, $b) {
                         // First compare by branch_id
@@ -86,6 +119,7 @@ class CashExpenseController extends Controller
     				return response()->json([
     					'status' => 'success',
     					'dailycollectionFile' => $dailycollectionFile,
+                        'excelFile' => $export,
     					'data' => $data,
     					'message' => 'Cash Expense List',
     				]);
@@ -93,6 +127,7 @@ class CashExpenseController extends Controller
                     return response()->json([
         				'status' => 'success',
         				'message' => 'Cash Expense List',
+                        'excelFile' => $export,
         				'data' => $data
         		    ]);
                 }
