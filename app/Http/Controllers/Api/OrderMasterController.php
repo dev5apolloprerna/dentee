@@ -1540,7 +1540,7 @@ class OrderMasterController extends Controller
 					$query->where(DB::raw("YEAR(order_payment_detail.payment_date)"),'=',$request->year);
 				})
 				->orderBy('order_payment_detail.payment_date','asc')
-				->groupBy('patients.patient_id','order_payment_detail.payment_date')
+				->groupBy('patients.patient_id','order_payment_detail.payment_date','order_payment_detail.payment_mode')
 				->get(); 
 				// ->toSql();
 			 //   dd($reportCollection);
